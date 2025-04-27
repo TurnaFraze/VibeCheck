@@ -2,91 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Legacy Business Atmosphere Assessment Results</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Legacy Business Atmosphere Assessment</title>
   <style>
     body { font-family: sans-serif; background: #f8f9fa; color: #222; margin: 0; padding: 0; }
     .container { max-width: 750px; margin: 2em auto; background: #fff; border-radius: 8px; box-shadow: 0 0 10px #ddd; padding: 2em; }
     h1, h2 { text-align: center; }
-    form { margin-top: 2em; }
-    .question-block { margin-bottom: 2em; }
-    .question-block label { display: block; margin-bottom: 0.5em; font-weight: bold; }
-    .options { margin-left: 1em; }
-    .option { margin-bottom: 0.3em; }
-    .form-row { margin-bottom: 1.2em; }
-    .form-row label { display: block; margin-bottom: 0.3em; font-weight: bold; }
-    .form-row input[type="text"], .form-row input[type="number"] {
-      width: 100%; padding: 0.5em; border: 1px solid #bbb; border-radius: 4px; font-size: 1em;
-    }
-    button { display: block; margin: 2em auto 0 auto; padding: 0.8em 2em; font-size: 1.2em; border-radius: 5px; border: none; background: #0077cc; color: #fff; cursor: pointer; }
-    button:hover { background: #005fa3; }
-    .footer { text-align: center; margin-top: 3em; color: #999; font-size: 0.95em; }
     .results { margin-top: 2em; text-align: center; }
-    .results img { max-width: 200px; margin-bottom: 1em; }
-    .score-table { margin: 1em auto; border-collapse: collapse; }
-    .score-table th, .score-table td { border: 1px solid #ddd; padding: 0.5em 1em; }
-    .score-table th { background: #f0f0f0; }
-    .share-btn { margin-top: 1.5em; padding: 0.7em 1.5em; background: #22b573; color: #fff; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; }
-    .share-btn:active { background: #17924a; }
-    .hidden { display: none; }
+    .score-table { margin: 2em auto; border-collapse: collapse; width: 100%; }
+    .score-table th, .score-table td { border: 1px solid #ccc; padding: 0.6em 1em; text-align: center; }
+    .score-table th { background: #e2e8f0; }
+    .dominant { font-size: 1.25em; color: #0077cc; text-align: center; margin: 1em 0; }
     .zip { font-family: monospace; }
+    .footer { text-align: center; margin-top: 2em; color: #999; font-size: 0.95em; }
+    .back-link { display: inline-block; margin: 1em 0; color: #0077cc; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Legacy Business Atmosphere Assessment</h1>
-    <p style="text-align:center;">Rate each question from 1–6 based on what best reflects your business or team.</p>
-    <form id="legacy-form" autocomplete="off">
-      <div class="form-row">
-        <label for="businessName">Business Name <span style="color:#c00;">*</span></label>
-        <input type="text" id="businessName" name="businessName" required placeholder="Enter business name">
-      </div>
-      <div class="form-row">
-        <label for="zipCode">ZIP Code <span style="color:#c00;">*</span></label>
-        <input type="text" id="zipCode" name="zipCode" required pattern="\d{5}" maxlength="5" placeholder="e.g. 12345" inputmode="numeric">
-      </div>
-      <div id="questions"></div>
-      <button type="submit">See My Results</button>
-    </form>
-    <div class="results hidden" id="results">
-      <img id="result-image" src="" alt="Result Image" />
-      <h2 id="result-business"></h2>
-      <div><strong>ZIP Code:</strong> <span class="zip" id="result-zip"></span></div>
-      <table class="score-table" id="score-table">
-        <thead>
-          <tr>
-            <th>Principle</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Scores will be injected here -->
-        </tbody>
-      </table>
-      <button class="share-btn" id="share-btn">Share My Result</button>
-    </div>
+    <div class="results" id="results"></div>
     <div class="footer">
+      <a href="index.html" class="back-link">Take the Assessment Again</a>
+      <br>
       Legacy Assessment &copy; 2025
     </div>
   </div>
   <script>
-    // Core question/option data ... (keep as-is)
-    // ... [snip: same as previous version, unchanged] ...
-
-    // Enforce only digits for ZIP code and max 5 chars
-    document.getElementById('zipCode').addEventListener('input', function(e) {
-      this.value = this.value.replace(/\D/g, '').slice(0, 5);
-    });
-
-    // Render questionnaire ... (keep as-is)
-    // ... [snip: same as previous version, unchanged] ...
-
-    // The rest of your JS (renderQuestions, calculateScores, showResultsView, form submission)
-    // ... [snip: same as previous version, unchanged] ...
-  </script>
-  <script>
     const params = new URLSearchParams(window.location.search);
-    document.write("Name: " + params.get("name"));
+    const business = params.get('business') || '(Unknown)';
+    const zip = params.get('zip') || '';
+    const dominant = params.get('dominant') || '';
+    const scores = {
+      PP: params.get('PP'),
+      WA: params.get('WA'),
+      CI: params.get('CI'),
+      AM: params.get('AM'),
+      GB: params.get('GB'),
+      TI: params.get('TI')
+    };
+    const principleNames = {
+      PP: "Power & Purpose",
+      WA: "Wisdom & Adaptation",
+      CI: "Connection & Impact",
+      AM: "Action & Method",
+      GB: "Growth & Balance",
+      TI: "Truth & Identity"
+    };
+    let html = `<h2>${business}</h2>`;
+    if (zip) html += `<div style="text-align:center;font-size:1.1em;">ZIP: <span class="zip">${zip}</span></div>`;
+    if (dominant) html += `<div class="dominant">Dominant Vibe: <strong>${dominant}</strong></div>`;
+    html += `<table class="score-table"><tr><th>Principle</th><th>Score</th></tr>`;
+    for (const [key, value] of Object.entries(scores)) {
+      html += `<tr><td>${principleNames[key]}</td><td>${value !== null ? value : '-'}</td></tr>`;
+    }
+    html += `</table>`;
+    document.getElementById('results').innerHTML = html;
   </script>
 </body>
 </html>
