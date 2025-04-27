@@ -358,5 +358,11 @@
       redirectToResultsPage({ businessName, zipCode, scores, dominant });
     });
   </script>
+  <script>
+    document.getElementById('quiz').onsubmit = function(e) {
+      e.preventDefault();
+      window.location.href = "results.html?name=" + encodeURIComponent(this.name.value);
+    };
+  </script>
 </body>
 </html>
