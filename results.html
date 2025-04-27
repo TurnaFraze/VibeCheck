@@ -84,5 +84,9 @@
     // The rest of your JS (renderQuestions, calculateScores, showResultsView, form submission)
     // ... [snip: same as previous version, unchanged] ...
   </script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.write("Name: " + params.get("name"));
+  </script>
 </body>
 </html>
